@@ -56,17 +56,16 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-4xl gap-6 px-6 py-8 md:grid-cols-[1fr_1.2fr]">
+      <section className="mx-auto grid max-w-5xl gap-6 px-6 py-8 md:grid-cols-[0.7fr_1.6fr]">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="text-lg font-semibold text-slate-900">
             Booking Guidelines
           </h2>
 
           <ul className="mt-4 space-y-3 text-sm text-slate-600">
-            <li>• Choose a clear title for your booking.</li>
-            <li>• End time must be later than start time.</li>
-            <li>• Double bookings will be blocked in the next layer.</li>
-            <li>• You can manage your bookings from My Bookings.</li>
+            <li>• Select a date and available time range.</li>
+            <li>• Existing bookings are blocked automatically.</li>
+            <li>• You can cancel bookings from My Bookings.</li>
           </ul>
         </div>
 
