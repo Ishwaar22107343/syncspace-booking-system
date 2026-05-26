@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import ProtectedPage from "../../components/ProtectedPage";
 
 type Booking = {
   id: string;
@@ -88,6 +89,7 @@ export default function BookingsPage() {
   }, []);
 
   return (
+   <ProtectedPage>
     <main className="min-h-screen bg-slate-50">
       <section className="border-b bg-white">
         <div className="mx-auto max-w-5xl px-6 py-6">
@@ -181,5 +183,6 @@ export default function BookingsPage() {
         )}
       </section>
     </main>
+   </ProtectedPage>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { useRouter } from "next/navigation";
+import ProtectedPage from "../../../components/ProtectedPage";
 
 type BookingFormProps = {
   resourceId: string;
@@ -84,6 +85,7 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
   }
 
   return (
+   <ProtectedPage>
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <h2 className="text-lg font-semibold text-slate-900">
         Create Booking
@@ -141,5 +143,6 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
         </button>
       </div>
     </div>
+   </ProtectedPage>
   );
 }

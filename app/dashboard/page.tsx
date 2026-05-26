@@ -1,5 +1,6 @@
 import { supabase } from "../../lib/supabase";
 import Link from "next/link";
+import ProtectedPage from "../../components/ProtectedPage";
 
 type Resource = {
   id: string;
@@ -12,6 +13,7 @@ type Resource = {
 };
 
 export default async function DashboardPage() {
+
   const { data: resources, error } = await supabase
     .from("resources")
     .select("*")
@@ -26,6 +28,7 @@ export default async function DashboardPage() {
   }
 
   return (
+   <ProtectedPage>
     <main className="min-h-screen bg-slate-50">
       <section className="border-b bg-white">
         <div className="mx-auto max-w-6xl px-6 py-6">
@@ -111,5 +114,6 @@ export default async function DashboardPage() {
         </div>
       </section>
     </main>
+   </ProtectedPage>
   );
 }

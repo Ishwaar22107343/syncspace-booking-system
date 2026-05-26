@@ -1,6 +1,7 @@
 import { supabase } from "../../../lib/supabase";
 import BookingForm from "./BookingForm";
 import Link from "next/link";
+import ProtectedPage from "../../../components/ProtectedPage";
 
 type ResourcePageProps = {
   params: Promise<{
@@ -10,7 +11,6 @@ type ResourcePageProps = {
 
 export default async function ResourcePage({ params }: ResourcePageProps) {
   const { id } = await params;
-
   const { data: resource, error } = await supabase
     .from("resources")
     .select("*")
@@ -29,6 +29,7 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
   }
 
   return (
+   <ProtectedPage>
     <main className="min-h-screen bg-slate-50">
       <section className="border-b bg-white">
         <div className="mx-auto max-w-4xl px-6 py-6">
@@ -72,5 +73,6 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
         <BookingForm resourceId={resource.id} />
       </section>
     </main>
+   </ProtectedPage>
   );
 }
