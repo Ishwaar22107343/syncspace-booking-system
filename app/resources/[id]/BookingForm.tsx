@@ -42,12 +42,35 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
       return;
     }
 
+    const requestedStart = new Date(startTime).toISOString();
+    const requestedEnd = new Date(endTime).toISOString();
+
+    const { data: conflicts, error: conflictError } = await supabase
+      .from("bookings")
+      .select("id")
+      .eq("resource_id", resourceId)
+      .eq("status", "confirmed")
+      .lt("start_time", requestedEnd)
+      .gt("end_time", requestedStart);
+
+    if (conflictError) {
+      setMessage(conflictError.message);
+      setLoading(false);
+      return;
+    }
+
+    if (conflicts && conflicts.length > 0) {
+      setMessage("This resource is already booked during the selected time.");
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase.from("bookings").insert({
       user_id: user.id,
       resource_id: resourceId,
       title,
-      start_time: startTime,
-      end_time: endTime,
+      start_time: requestedStart,
+      end_time: requestedEnd,
       status: "confirmed",
     });
 
