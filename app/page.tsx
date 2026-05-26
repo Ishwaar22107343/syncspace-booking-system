@@ -1,14 +1,16 @@
-export default function HomePage() {
+import { supabase } from "../lib/supabase";
+
+export default async function HomePage() {
+  const { data, error } = await supabase
+    .from("test")
+    .select("*");
+
+  console.log(data);
+  console.log(error);
+
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-50">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-slate-900">
-          SyncSpace
-        </h1>
-        <p className="mt-3 text-slate-600">
-          A simple booking system for shared spaces and resources.
-        </p>
-      </div>
+    <main>
+      <h1>SyncSpace</h1>
     </main>
   );
 }
