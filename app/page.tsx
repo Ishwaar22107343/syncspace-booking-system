@@ -74,7 +74,7 @@ export default function HomePage() {
             <p className="text-xs font-semibold uppercase text-slate-400">
               Reminder
             </p>
-            <p className="mt-1 text-lg font-bold">30 mins before</p>
+            <p className="mt-1 text-lg font-bold">Daily 8am</p>
             <p className="mt-1 text-sm text-slate-300">Email sent</p>
           </div>
 
