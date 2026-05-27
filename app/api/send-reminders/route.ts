@@ -25,8 +25,17 @@ export async function GET(request: Request) {
   }
 
   const now = new Date();
-  const windowStart = new Date(now.getTime() + 25 * 60 * 1000).toISOString();
-  const windowEnd = new Date(now.getTime() + 35 * 60 * 1000).toISOString();
+
+  const malaysiaToday = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Kuala_Lumpur" }));
+
+  const startOfMalaysiaDay = new Date(malaysiaToday);
+  startOfMalaysiaDay.setHours(0, 0, 0, 0);
+  
+  const endOfMalaysiaDay = new Date(malaysiaToday);
+  endOfMalaysiaDay.setHours(23, 59, 59, 999);
+  
+  const windowStart = startOfMalaysiaDay.toISOString();
+  const windowEnd = endOfMalaysiaDay.toISOString();
 
   const { data: bookings, error } = await supabaseAdmin
     .from("bookings")
@@ -69,7 +78,7 @@ export async function GET(request: Request) {
       await resend.emails.send({
         from: "SyncSpace <onboarding@resend.dev>",
         to: [email],
-        subject: "Reminder: Your booking is scheduled soon.",
+        subject: "Reminder: You have a booking scheduled today.",
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px;">
             <h2 style="color: #0f172a;">Booking Reminder</h2>
