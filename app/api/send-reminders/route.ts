@@ -2,6 +2,7 @@ import { Resend } from "resend";
 import { createClient } from "@supabase/supabase-js";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const appUrl = process.env.NEXT_PUBLIC_APP_URL
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -82,6 +83,22 @@ export async function GET(request: Request) {
               <p><strong>Start:</strong> ${formatMalaysiaDateTime(booking.start_time)}</p>
               <p><strong>End:</strong> ${formatMalaysiaDateTime(booking.end_time)}</p>
             </div>
+
+            <a
+              href="${appUrl}/bookings"
+              style="
+                display: inline-block;
+                margin-top: 20px;
+                background: #0f172a;
+                color: #ffffff;
+                text-decoration: none;
+                padding: 12px 18px;
+                border-radius: 10px;
+                font-weight: 600;
+              "
+            >
+             Manage Booking
+            </a>
 
             <p style="margin-top: 20px;">See you soon.</p>
           </div>

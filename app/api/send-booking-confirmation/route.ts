@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const appUrl = process.env.NEXT_PUBLIC_APP_URL
 
 export async function POST(request: Request) {
   try {
@@ -38,6 +39,22 @@ export async function POST(request: Request) {
             <p><strong>Start:</strong> ${startTime}</p>
             <p><strong>End:</strong> ${endTime}</p>
           </div>
+
+          <a
+            href="${appUrl}/bookings"
+            style="
+                display: inline-block;
+                margin-top: 20px;
+                background: #0f172a;
+                color: #ffffff;
+                text-decoration: none;
+                padding: 12px 18px;
+                border-radius: 10px;
+                font-weight: 600;
+            "
+          >
+           Manage Booking
+          </a>
 
           <p style="margin-top: 20px;">Thank you for using SyncSpace.</p>
         </div>
