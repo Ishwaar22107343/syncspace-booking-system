@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { supabase } from "../../lib/supabase";
 import Link from "next/link";
+import { supabase } from "../../lib/supabase";
 import ProtectedPage from "../../components/ProtectedPage";
+import AppShell from "../../components/AppShell";
 
 type Resource = {
   id: string;
@@ -35,20 +36,10 @@ export default function DashboardPage() {
   const [userName, setUserName] = useState("User");
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+
   const [introVisible, setIntroVisible] = useState(
     searchParams.get("intro") === "true"
   );
-
-  useEffect(() => {
-    if (!introVisible) return;
-
-    const timer = setTimeout(() => {
-      setIntroVisible(false);
-      router.replace("/dashboard");
-    }, 1600);
-
-    return () => clearTimeout(timer);
-  }, [introVisible, router]);
 
   async function loadDashboard() {
     setLoading(true);
@@ -114,10 +105,17 @@ export default function DashboardPage() {
     loadDashboard();
   }, []);
 
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    router.push("/auth");
-  }
+  useEffect(() => {
+    if (!introVisible) return;
+    if (loading) return;
+
+    const timer = setTimeout(() => {
+      setIntroVisible(false);
+      router.replace("/dashboard");
+    }, 700);
+
+    return () => clearTimeout(timer);
+  }, [introVisible, loading, router]);
 
   function formatMalaysiaDateTime(dateString: string) {
     return new Intl.DateTimeFormat("en-MY", {
@@ -133,58 +131,20 @@ export default function DashboardPage() {
 
   return (
     <ProtectedPage>
-      {introVisible && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950">
-          <div className="flex flex-col items-center">
-            <div className="h-24 w-24 animate-[spin_2s_linear_infinite] rounded-3xl bg-gradient-to-br from-sky-300 via-indigo-400 to-pink-300 shadow-2xl shadow-indigo-500/40" />
-            <h2 className="mt-6 text-2xl font-bold text-white">
-              Entering SyncSpace
-            </h2>
-            <p className="mt-2 text-sm text-slate-300">
-              Preparing your workspace...
-            </p>
-          </div>
-        </div>
-      )}
-
-      <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#dbeafe,transparent_30%),radial-gradient(circle_at_top_right,#fce7f3,transparent_26%),linear-gradient(to_bottom,#f8fafc,#eef2f7)]">
-        <nav className="sticky top-0 z-40 border-b border-white/70 bg-white/75 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-            <Link href="/dashboard" className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-sm font-bold text-white shadow-sm">
-                S
-              </div>
-              <div>
-                <p className="text-sm font-bold text-slate-950">SyncSpace</p>
-                <p className="text-xs text-slate-500">Resource booking</p>
-              </div>
-            </Link>
-
-            <div className="flex items-center gap-2">
-              <Link
-                href="/dashboard"
-                className="rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
-              >
-                Dashboard
-              </Link>
-
-              <Link
-                href="/bookings"
-                className="rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
-              >
-                My Bookings
-              </Link>
-
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800"
-              >
-                Logout
-              </button>
+      <AppShell>
+        {introVisible && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[radial-gradient(circle_at_top_left,#dbeafe,transparent_30%),radial-gradient(circle_at_top_right,#fce7f3,transparent_26%),linear-gradient(to_bottom,#f8fafc,#eef2f7)]">
+            <div className="flex flex-col items-center">
+              <div className="h-24 w-24 animate-[spin_2s_linear_infinite] rounded-3xl bg-gradient-to-br from-sky-300 via-indigo-400 to-pink-300 shadow-2xl shadow-indigo-500/40" />
+              <h2 className="mt-6 text-2xl font-bold text-slate-950">
+                Entering SyncSpace
+              </h2>
+              <p className="mt-2 text-sm text-slate-600">
+                Preparing your dashboard...
+              </p>
             </div>
           </div>
-        </nav>
+        )}
 
         <section className="border-b border-white/70 bg-white/50 backdrop-blur">
           <div className="mx-auto max-w-6xl px-6 py-8">
@@ -208,11 +168,7 @@ export default function DashboardPage() {
             </p>
           )}
 
-          {loading ? (
-            <div className="rounded-2xl border border-white/80 bg-white/80 p-8 text-sm text-slate-600 shadow-sm">
-              Loading your dashboard...
-            </div>
-          ) : (
+          {!loading && (
             <>
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="rounded-2xl border border-white/80 bg-white/80 p-5 shadow-sm backdrop-blur">
@@ -340,7 +296,7 @@ export default function DashboardPage() {
             </>
           )}
         </section>
-      </main>
+      </AppShell>
     </ProtectedPage>
   );
 }

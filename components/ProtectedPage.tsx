@@ -20,21 +20,16 @@ export default function ProtectedPage({
 
       if (!user) {
         router.push("/auth");
-      } else {
-        setChecking(false);
+        return;
       }
+
+      setChecking(false);
     }
 
     checkUser();
   }, [router]);
 
-  if (checking) {
-    return (
-      <main className="min-h-screen flex items-center justify-center bg-slate-50">
-        <p className="text-sm text-slate-600">Checking session...</p>
-      </main>
-    );
-  }
+  if (checking) return null;
 
   return <>{children}</>;
 }

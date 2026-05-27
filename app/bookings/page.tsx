@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ProtectedPage from "../../components/ProtectedPage";
+import AppShell from "../../components/AppShell";
 
 type Booking = {
   id: string;
@@ -28,6 +28,7 @@ export default function BookingsPage() {
 
   async function loadBookings() {
     setLoading(true);
+    setMessage("");
 
     const {
       data: { user },
@@ -89,101 +90,87 @@ export default function BookingsPage() {
     loadBookings();
   }, []);
 
+  function formatMalaysiaDateTime(dateString: string) {
+    return new Intl.DateTimeFormat("en-MY", {
+      timeZone: "Asia/Kuala_Lumpur",
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date(dateString));
+  }
+
   return (
-   <ProtectedPage>
-    <main className="min-h-screen bg-slate-50">
-      <section className="border-b bg-white">
-        <div className="mx-auto max-w-5xl px-6 py-6">
-          <Link
-            href="/dashboard"
-            className="text-sm text-slate-500 hover:text-slate-900"
-          >
-            ← Back to resources
-          </Link>
-
-          <h1 className="mt-6 text-3xl font-bold text-slate-900">
-            My Bookings
-          </h1>
-          <p className="mt-2 text-slate-600">
-            View and manage your resource reservations.
-          </p>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-5xl px-6 py-8">
-        {message && (
-          <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
-            {message}
-          </p>
-        )}
-
-        {loading ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-8 text-slate-600">
-            Loading bookings...
-          </div>
-        ) : bookings.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
-            <h2 className="text-lg font-semibold text-slate-900">
-              No bookings yet
-            </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Create your first booking from the resources page.
+    <ProtectedPage>
+      <AppShell>
+        <section className="border-b border-white/70 bg-white/50 backdrop-blur">
+          <div className="mx-auto max-w-5xl px-6 py-8">
+            <h1 className="text-3xl font-bold text-slate-950">
+              My Bookings
+            </h1>
+            <p className="mt-2 text-slate-600">
+              View and manage your confirmed resource reservations.
             </p>
-            <Link
-              href="/dashboard"
-              className="mt-5 inline-flex rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-700"
-            >
-              Browse Resources
-            </Link>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {bookings.map((booking) => (
-              <div
-                key={booking.id}
-                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-              >
-                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                  <div>
-                    <span
-                      className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
-                        booking.status === "confirmed"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {booking.status}
-                    </span>
+        </section>
 
-                    <h2 className="mt-3 text-lg font-semibold text-slate-900">
-                      {booking.title}
-                    </h2>
+        <section className="mx-auto max-w-5xl px-6 py-8">
+          {message && (
+            <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
+              {message}
+            </p>
+          )}
 
-                    <p className="mt-1 text-sm text-slate-600">
-                      {booking.resources?.name} • {booking.resources?.location}
-                    </p>
+          {!loading && bookings.length === 0 && (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white/80 p-8 text-center shadow-sm">
+              <h2 className="text-lg font-semibold text-slate-900">
+                No bookings yet
+              </h2>
+              <p className="mt-2 text-sm text-slate-600">
+                Create your first booking from the dashboard.
+              </p>
+            </div>
+          )}
 
-                    <p className="mt-3 text-sm text-slate-700">
-                      {new Date(booking.start_time).toLocaleString()} →{" "}
-                      {new Date(booking.end_time).toLocaleString()}
-                    </p>
-                  </div>
+          {!loading && bookings.length > 0 && (
+            <div className="space-y-4">
+              {bookings.map((booking) => (
+                <div
+                  key={booking.id}
+                  className="rounded-2xl border border-white/80 bg-white/85 p-5 shadow-sm backdrop-blur transition hover:shadow-md"
+                >
+                  <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                    <div>
+                      <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700">
+                        {booking.status}
+                      </span>
 
-                  {booking.status === "confirmed" && (
+                      <h2 className="mt-3 text-lg font-semibold text-slate-950">
+                        {booking.title}
+                      </h2>
+
+                      <p className="mt-1 text-sm text-slate-600">
+                        {booking.resources?.name} •{" "}
+                        {booking.resources?.location}
+                      </p>
+
+                      <p className="mt-3 text-sm text-slate-700">
+                        {formatMalaysiaDateTime(booking.start_time)} →{" "}
+                        {formatMalaysiaDateTime(booking.end_time)}
+                      </p>
+                    </div>
+
                     <button
                       onClick={() => cancelBooking(booking.id)}
-                      className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+                      className="rounded-xl border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
                     >
                       Cancel Booking
                     </button>
-                  )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-    </main>
-   </ProtectedPage>
+              ))}
+            </div>
+          )}
+        </section>
+      </AppShell>
+    </ProtectedPage>
   );
 }
