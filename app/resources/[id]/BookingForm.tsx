@@ -1,5 +1,3 @@
-//BookingForm.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,6 +6,8 @@ import { useRouter } from "next/navigation";
 
 type BookingFormProps = {
   resourceId: string;
+  resourceName: string;
+  resourceLocation: string;
 };
 
 type ExistingBooking = {
@@ -25,7 +25,11 @@ const timeSlots = [
   "17:00", "17:30", "18:00",
 ];
 
-export default function BookingForm({ resourceId }: BookingFormProps) {
+export default function BookingForm({
+  resourceId,
+  resourceName,
+  resourceLocation,
+}: BookingFormProps) {
   const router = useRouter();
 
   const [title, setTitle] = useState("");
@@ -39,7 +43,6 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
   const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
-    // Reveal form on mount
     requestAnimationFrame(() => {
       requestAnimationFrame(() => setRevealed(true));
     });
@@ -47,6 +50,7 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
 
   async function loadBookings() {
     if (!selectedDate) return;
+
     setLoadingSlots(true);
 
     const startOfDay = new Date(`${selectedDate}T00:00`);
@@ -60,7 +64,10 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
       .gte("start_time", startOfDay.toISOString())
       .lte("start_time", endOfDay.toISOString());
 
-    if (!error) setBookings(data || []);
+    if (!error) {
+      setBookings(data || []);
+    }
+
     setLoadingSlots(false);
   }
 
@@ -70,6 +77,23 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
 
   function getDateTime(slot: string) {
     return new Date(`${selectedDate}T${slot}`);
+  }
+
+  function formatMalaysiaDateTime(dateString: string) {
+    return new Intl.DateTimeFormat("en-MY", {
+      timeZone: "Asia/Kuala_Lumpur",
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date(dateString));
+  }
+
+  function isSlotInPast(slot: string) {
+    if (!selectedDate) return false;
+
+    const slotStart = getDateTime(slot);
+    const now = new Date();
+
+    return slotStart <= now;
   }
 
   function isSlotBooked(slot: string) {
@@ -82,6 +106,7 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
     return bookings.some((booking) => {
       const existingStart = new Date(booking.start_time);
       const existingEnd = new Date(booking.end_time);
+
       return slotStart < existingEnd && slotEnd > existingStart;
     });
   }
@@ -97,6 +122,7 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
       bookings.find((booking) => {
         const existingStart = new Date(booking.start_time);
         const existingEnd = new Date(booking.end_time);
+
         return slotStart < existingEnd && slotEnd > existingStart;
       }) || null
     );
@@ -113,6 +139,7 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
   }
 
   function handleSlotClick(slot: string) {
+    if (isSlotInPast(slot)) return;
     if (isSlotBooked(slot)) return;
 
     if (!startSlot || (startSlot && endSlot)) {
@@ -135,6 +162,7 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
     const overlaps = bookings.some((booking) => {
       const existingStart = new Date(booking.start_time);
       const existingEnd = new Date(booking.end_time);
+
       return proposedStart < existingEnd && proposedEnd > existingStart;
     });
 
@@ -170,6 +198,12 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
 
     const requestedStart = getDateTime(startSlot).toISOString();
     const requestedEnd = getDateTime(endSlot).toISOString();
+
+    if (new Date(requestedStart) <= new Date()) {
+      setMessage("You cannot book a past time slot.");
+      setLoading(false);
+      return;
+    }
 
     const { data: conflicts, error: conflictError } = await supabase
       .from("bookings")
@@ -207,6 +241,25 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
       return;
     }
 
+    try {
+      await fetch("/api/send-booking-confirmation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: user.email,
+          title,
+          resourceName,
+          resourceLocation,
+          startTime: formatMalaysiaDateTime(requestedStart),
+          endTime: formatMalaysiaDateTime(requestedEnd),
+        }),
+      });
+    } catch (error) {
+      console.error("Email failed:", error);
+    }
+
     router.push("/bookings");
   }
 
@@ -214,7 +267,7 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
     <div
       className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
       style={{
-        opacity: revealed ? 1 : 0,
+        opacity: revealed ? 1 : 0.2,
         transform: revealed ? "translateY(0)" : "translateY(14px)",
         transition: "opacity 400ms ease 100ms, transform 400ms ease 100ms",
       }}
@@ -237,7 +290,7 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
               setEndSlot("");
               setMessage("");
             }}
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
           >
             Clear selection
           </button>
@@ -251,7 +304,7 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
               Booking Title
             </label>
             <input
-              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
+              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition focus:outline-none focus:ring-2 focus:ring-slate-900"
               placeholder="e.g. Team meeting"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -264,7 +317,8 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
             </label>
             <input
               type="date"
-              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
+              min={new Date().toISOString().split("T")[0]}
+              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 transition focus:outline-none focus:ring-2 focus:ring-slate-900"
               value={selectedDate}
               onChange={(e) => {
                 setSelectedDate(e.target.value);
@@ -329,6 +383,10 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
                 Available
               </span>
               <span className="flex items-center gap-1">
+                <span className="h-3 w-3 rounded bg-slate-200" />
+                Past
+              </span>
+              <span className="flex items-center gap-1">
                 <span className="h-3 w-3 rounded bg-red-100" />
                 Booked
               </span>
@@ -344,7 +402,6 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
               Select a date to view the schedule.
             </div>
           ) : loadingSlots ? (
-            // Skeleton while loading slots
             <div className="h-[480px] overflow-y-auto rounded-xl border border-slate-200 bg-slate-50">
               {Array.from({ length: 10 }).map((_, i) => (
                 <div
@@ -356,10 +413,8 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
                   </div>
                   <div className="px-4 py-3">
                     <div
-                      className="h-8 rounded-lg animate-pulse bg-slate-200/70"
-                      style={{
-                        animationDelay: `${i * 60}ms`,
-                      }}
+                      className="h-8 rounded-lg bg-slate-200/70 animate-pulse"
+                      style={{ animationDelay: `${i * 60}ms` }}
                     />
                   </div>
                 </div>
@@ -369,7 +424,9 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
             <div className="h-[480px] overflow-y-auto rounded-xl border border-slate-200 bg-slate-50">
               {timeSlots.slice(0, -1).map((slot, index) => {
                 const nextSlot = timeSlots[index + 1];
-                const booked = isSlotBooked(slot);
+                const past = isSlotInPast(slot);
+                const slotBooked = isSlotBooked(slot);
+                const disabled = past || slotBooked;
                 const selected = isSlotSelected(slot);
                 const isStart = startSlot === slot;
                 const booking = getBookingForSlot(slot);
@@ -378,10 +435,12 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
                   <button
                     key={slot}
                     type="button"
-                    disabled={booked}
+                    disabled={disabled}
                     onClick={() => handleSlotClick(slot)}
                     className={`grid min-h-[56px] w-full grid-cols-[80px_1fr] border-b border-slate-200 text-left transition last:border-b-0 ${
-                      booked
+                      past
+                        ? "cursor-not-allowed bg-slate-100 text-slate-400 opacity-70"
+                        : slotBooked
                         ? "cursor-not-allowed bg-red-50"
                         : selected || isStart
                         ? "bg-slate-900 text-white"
@@ -390,7 +449,9 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
                   >
                     <div
                       className={`flex items-start justify-center border-r px-3 py-3 text-xs font-medium ${
-                        booked
+                        past
+                          ? "border-slate-200 text-slate-400"
+                          : slotBooked
                           ? "border-red-200 text-red-400"
                           : selected || isStart
                           ? "border-slate-700 text-white"
@@ -401,7 +462,16 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
                     </div>
 
                     <div className="relative px-4 py-2">
-                      {booked ? (
+                      {past ? (
+                        <div className="rounded-lg border border-slate-200 bg-slate-200/70 px-3 py-2">
+                          <p className="text-sm font-medium text-slate-500">
+                            Past time
+                          </p>
+                          <p className="mt-0.5 text-xs text-slate-400">
+                            {slot} - {nextSlot}
+                          </p>
+                        </div>
+                      ) : slotBooked ? (
                         <div className="rounded-lg border border-red-200 bg-red-100 px-3 py-2">
                           <p className="text-sm font-medium text-red-700">
                             {booking?.title || "Booked"}

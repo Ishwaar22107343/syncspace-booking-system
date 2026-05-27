@@ -56,6 +56,7 @@ export default function BookingsPage() {
       `)
       .eq("user_id", user.id)
       .eq("status", "confirmed")
+      .gt("end_time", new Date().toISOString())
       .order("start_time", { ascending: true });
 
     if (error) {

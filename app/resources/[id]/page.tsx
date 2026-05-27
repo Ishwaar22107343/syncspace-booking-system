@@ -41,7 +41,11 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
 
         <section className="mx-auto max-w-5xl px-6 py-8">
           <GuidelinesBox />
-          <BookingForm resourceId={resource.id} />
+          <BookingForm 
+          resourceId={resource.id} 
+          resourceName={resource.name}
+          resourceLocation={resource.location}
+          />
         </section>
       </AppShell>
     </ProtectedPage>

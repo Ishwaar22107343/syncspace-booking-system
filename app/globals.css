@@ -25,10 +25,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* ============================================
-   VIEW TRANSITIONS API
-   Smooth same-document navigations
-   ============================================ */
 @view-transition {
   navigation: auto;
 }
@@ -63,10 +59,6 @@ body {
   }
 }
 
-/* ============================================
-   CONTENT FADE-IN ANIMATION
-   Used when data loads on a page
-   ============================================ */
 @keyframes content-reveal {
   from {
     opacity: 0;
@@ -93,9 +85,6 @@ body {
 .stagger-children > *:nth-child(8) { animation-delay: 280ms; }
 .stagger-children > *:nth-child(n+9) { animation-delay: 320ms; }
 
-/* ============================================
-   SKELETON SHIMMER ENHANCEMENT
-   ============================================ */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -112,10 +101,6 @@ body {
   animation: shimmer 1.8s ease-in-out infinite;
 }
 
-/* ============================================
-   PREVENT LAYOUT SHIFT ON NAV
-   ============================================ */
-/* Ensure nav doesn't flash during transition */
 nav {
   will-change: auto;
 }

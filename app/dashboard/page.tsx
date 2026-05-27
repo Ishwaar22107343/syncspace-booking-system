@@ -21,6 +21,7 @@ type Booking = {
   id: string;
   title: string;
   start_time: string;
+  end_time: string,
   resources: {
     name: string;
     location: string;
@@ -78,6 +79,7 @@ export default function DashboardPage() {
         id,
         title,
         start_time,
+        end_time,
         resources (
           name,
           location
@@ -85,7 +87,7 @@ export default function DashboardPage() {
       `)
       .eq("user_id", user.id)
       .eq("status", "confirmed")
-      .gte("start_time", now)
+      .gte("end_time", now)
       .order("start_time", { ascending: true });
 
     if (resourcesError || bookingsError) {
