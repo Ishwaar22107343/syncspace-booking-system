@@ -73,24 +73,6 @@ Deployment
 
 ---
 
-## System Architecture
-
-User
-↓
-Next.js Frontend
-↓
-Supabase Authentication
-↓
-Supabase Database
-↓
-Booking Validation & Conflict Detection
-↓
-Email Notifications (Resend)
-↓
-Vercel Cron (Reminder Service)
-
----
-
 ## Local Installation
 
 ### Prerequisites
@@ -102,9 +84,10 @@ Vercel Cron (Reminder Service)
 
 ### Clone Repository
 
-git clone <repository-url>
-
+```bash
+git clone [<repository-url>](https://github.com/Ishwaar22107343/syncspace-booking-system.git)
 cd syncspace-booking-system
+```
 
 ### Install Dependencies
 
@@ -116,17 +99,13 @@ Create a file named:
 
 .env.local
 
-Add the following variables:
-
+```text
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-
 RESEND_API_KEY=your_resend_api_key
-
 CRON_SECRET=your_secret_key
-
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
 
 ### Start Development Server
 
@@ -144,43 +123,15 @@ Create the following tables:
 
 ### profiles
 
-id (uuid)
-
-full_name (text)
-
-email (text)
+id (uuid), full_name (text), email (text)
 
 ### resources
 
-id (uuid)
-
-name (text)
-
-description (text)
-
-location (text)
-
-type (text)
-
-capacity (integer)
+id (uuid), name (text), description (text), location (text), type (text), capacity (integer)
 
 ### bookings
 
-id (uuid)
-
-user_id (uuid)
-
-resource_id (uuid)
-
-title (text)
-
-start_time (timestamp)
-
-end_time (timestamp)
-
-status (text)
-
-reminder_sent_at (timestamp)
+id (uuid), user_id (uuid), resource_id (uuid), title (text), start_time (timestamp), end_time (timestamp), status (text), reminder_sent_at (timestamp)
 
 ---
 
@@ -196,25 +147,14 @@ reminder_sent_at (timestamp)
 
 4. Configure Environment Variables
 
+```text
 NEXT_PUBLIC_SUPABASE_URL
-
 NEXT_PUBLIC_SUPABASE_ANON_KEY
-
 RESEND_API_KEY
-
 CRON_SECRET
-
 NEXT_PUBLIC_APP_URL
-
-Set:
-
 NEXT_PUBLIC_APP_URL
-
-to your deployed domain.
-
-Example:
-
-https://syncspace.vercel.app
+```
 
 5. Deploy
 
@@ -248,12 +188,11 @@ is updated to prevent duplicate reminders.
 
 ## Vercel Cron Configuration
 
-Create:
-
-vercel.json
+Create: vercel.json
 
 Example:
 
+```json
 {
   "crons": [
     {
@@ -262,7 +201,7 @@ Example:
     }
   ]
 }
-
+```
 This executes the reminder service every 5 minutes.
 
 ---
@@ -282,7 +221,7 @@ This executes the reminder service every 5 minutes.
 
 ## Author
 
-Kirrtanaa Nallathamby
+Ishwaar Anandhe Thurai
 
 Bachelor of Artificial Intelligence
 
