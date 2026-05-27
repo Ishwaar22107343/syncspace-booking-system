@@ -53,6 +53,7 @@ export default function BookingsPage() {
         )
       `)
       .eq("user_id", user.id)
+      .eq("status", "confirmed")
       .order("start_time", { ascending: true });
 
     if (error) {
