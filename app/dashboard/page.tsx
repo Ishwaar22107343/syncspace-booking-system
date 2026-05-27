@@ -36,6 +36,7 @@ export default function DashboardPage() {
   const [userName, setUserName] = useState("User");
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [revealed, setRevealed] = useState(false);
 
   const [introVisible, setIntroVisible] = useState(
     searchParams.get("intro") === "true"
@@ -99,6 +100,10 @@ export default function DashboardPage() {
     }
 
     setLoading(false);
+    // Slight delay so the animation fires after paint
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setRevealed(true));
+    });
   }
 
   useEffect(() => {
@@ -148,13 +153,34 @@ export default function DashboardPage() {
 
         <section className="border-b border-white/70 bg-white/50 backdrop-blur">
           <div className="mx-auto max-w-6xl px-6 py-8">
-            <p className="text-sm font-medium text-slate-500">
+            <p
+              className="text-sm font-medium text-slate-500"
+              style={{
+                opacity: revealed ? 1 : 0,
+                transform: revealed ? "translateY(0)" : "translateY(8px)",
+                transition: "opacity 300ms ease, transform 300ms ease",
+              }}
+            >
               Welcome back, {userName}
             </p>
-            <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-950">
+            <h1
+              className="mt-2 text-4xl font-bold tracking-tight text-slate-950"
+              style={{
+                opacity: revealed ? 1 : 0,
+                transform: revealed ? "translateY(0)" : "translateY(8px)",
+                transition: "opacity 300ms ease 60ms, transform 300ms ease 60ms",
+              }}
+            >
               Book shared spaces without the back-and-forth.
             </h1>
-            <p className="mt-3 max-w-2xl text-slate-600">
+            <p
+              className="mt-3 max-w-2xl text-slate-600"
+              style={{
+                opacity: revealed ? 1 : 0,
+                transform: revealed ? "translateY(0)" : "translateY(8px)",
+                transition: "opacity 300ms ease 120ms, transform 300ms ease 120ms",
+              }}
+            >
               Manage rooms, studios, equipment, and shared facilities from one
               clean dashboard.
             </p>
@@ -163,64 +189,83 @@ export default function DashboardPage() {
 
         <section className="mx-auto max-w-6xl px-6 py-8">
           {message && (
-            <p className="mb-5 rounded-lg bg-red-50 p-3 text-sm text-red-600">
+            <p className="mb-5 rounded-lg bg-red-50 p-3 text-sm text-red-600 animate-content-reveal">
               {message}
             </p>
           )}
 
           {!loading && (
             <>
+              {/* Stats */}
               <div className="grid gap-4 md:grid-cols-3">
-                <div className="rounded-2xl border border-white/80 bg-white/80 p-5 shadow-sm backdrop-blur">
-                  <p className="text-sm font-medium text-slate-500">
-                    My Upcoming Bookings
-                  </p>
-                  <p className="mt-3 text-3xl font-bold text-slate-950">
-                    {activeBookings}
-                  </p>
-                  <p className="mt-1 text-sm text-slate-500">
-                    Future confirmed reservations
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-white/80 bg-white/80 p-5 shadow-sm backdrop-blur">
-                  <p className="text-sm font-medium text-slate-500">
-                    Resources
-                  </p>
-                  <p className="mt-3 text-3xl font-bold text-slate-950">
-                    {totalResources}
-                  </p>
-                  <p className="mt-1 text-sm text-slate-500">
-                    Rooms, equipment, and shared facilities
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-white/80 bg-slate-950 p-5 text-white shadow-sm">
-                  <p className="text-sm font-medium text-slate-300">
-                    Next Booking
-                  </p>
-
-                  {nextBooking ? (
-                    <>
-                      <p className="mt-3 text-lg font-semibold">
-                        {nextBooking.title}
-                      </p>
-                      <p className="mt-1 text-sm text-slate-300">
-                        {nextBooking.resources?.name}
-                      </p>
-                      <p className="mt-3 text-sm text-slate-300">
-                        {formatMalaysiaDateTime(nextBooking.start_time)}
-                      </p>
-                    </>
-                  ) : (
-                    <p className="mt-3 text-sm text-slate-300">
-                      No upcoming bookings yet.
-                    </p>
-                  )}
-                </div>
+                {[
+                  {
+                    label: "My Upcoming Bookings",
+                    value: activeBookings,
+                    sub: "Future confirmed reservations",
+                    dark: false,
+                  },
+                  {
+                    label: "Resources",
+                    value: totalResources,
+                    sub: "Rooms, equipment, and shared facilities",
+                    dark: false,
+                  },
+                  null,
+                ].map((stat, i) => {
+                  if (i === 2) {
+                    return (
+                      <div
+                        key="next"
+                        className="rounded-2xl border border-white/80 bg-slate-950 p-5 text-white shadow-sm"
+                        style={{
+                          opacity: revealed ? 1 : 0,
+                          transform: revealed ? "translateY(0)" : "translateY(12px)",
+                          transition: `opacity 350ms ease ${180 + i * 60}ms, transform 350ms ease ${180 + i * 60}ms`,
+                        }}
+                      >
+                        <p className="text-sm font-medium text-slate-300">Next Booking</p>
+                        {nextBooking ? (
+                          <>
+                            <p className="mt-3 text-lg font-semibold">{nextBooking.title}</p>
+                            <p className="mt-1 text-sm text-slate-300">{nextBooking.resources?.name}</p>
+                            <p className="mt-3 text-sm text-slate-300">
+                              {formatMalaysiaDateTime(nextBooking.start_time)}
+                            </p>
+                          </>
+                        ) : (
+                          <p className="mt-3 text-sm text-slate-300">No upcoming bookings yet.</p>
+                        )}
+                      </div>
+                    );
+                  }
+                  if (!stat) return null;
+                  return (
+                    <div
+                      key={i}
+                      className="rounded-2xl border border-white/80 bg-white/80 p-5 shadow-sm backdrop-blur"
+                      style={{
+                        opacity: revealed ? 1 : 0,
+                        transform: revealed ? "translateY(0)" : "translateY(12px)",
+                        transition: `opacity 350ms ease ${180 + i * 60}ms, transform 350ms ease ${180 + i * 60}ms`,
+                      }}
+                    >
+                      <p className="text-sm font-medium text-slate-500">{stat.label}</p>
+                      <p className="mt-3 text-3xl font-bold text-slate-950">{stat.value}</p>
+                      <p className="mt-1 text-sm text-slate-500">{stat.sub}</p>
+                    </div>
+                  );
+                })}
               </div>
 
-              <div className="mt-10 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+              <div
+                className="mt-10 flex flex-col gap-3 md:flex-row md:items-end md:justify-between"
+                style={{
+                  opacity: revealed ? 1 : 0,
+                  transform: revealed ? "translateY(0)" : "translateY(10px)",
+                  transition: "opacity 350ms ease 360ms, transform 350ms ease 360ms",
+                }}
+              >
                 <div>
                   <h2 className="text-2xl font-bold text-slate-950">
                     Available Resources
@@ -236,10 +281,15 @@ export default function DashboardPage() {
               </div>
 
               <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {resources.map((resource) => (
+                {resources.map((resource, i) => (
                   <div
                     key={resource.id}
                     className="group rounded-3xl border border-white/80 bg-white/85 p-5 shadow-sm backdrop-blur transition duration-200 hover:-translate-y-1 hover:shadow-xl"
+                    style={{
+                      opacity: revealed ? 1 : 0,
+                      transform: revealed ? "translateY(0)" : "translateY(14px)",
+                      transition: `opacity 400ms ease ${420 + i * 50}ms, transform 400ms ease ${420 + i * 50}ms`,
+                    }}
                   >
                     <div className="mb-4 flex items-start justify-between gap-3">
                       <div>
@@ -268,17 +318,12 @@ export default function DashboardPage() {
 
                     <div className="mt-5 space-y-2 text-sm text-slate-600">
                       <p>
-                        <span className="font-medium text-slate-900">
-                          Location:
-                        </span>{" "}
+                        <span className="font-medium text-slate-900">Location:</span>{" "}
                         {resource.location}
                       </p>
-
                       {resource.capacity && (
                         <p>
-                          <span className="font-medium text-slate-900">
-                            Capacity:
-                          </span>{" "}
+                          <span className="font-medium text-slate-900">Capacity:</span>{" "}
                           {resource.capacity} pax
                         </p>
                       )}

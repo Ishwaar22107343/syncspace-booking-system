@@ -35,9 +35,19 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
   const [bookings, setBookings] = useState<ExistingBooking[]>([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    // Reveal form on mount
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setRevealed(true));
+    });
+  }, []);
 
   async function loadBookings() {
     if (!selectedDate) return;
+    setLoadingSlots(true);
 
     const startOfDay = new Date(`${selectedDate}T00:00`);
     const endOfDay = new Date(`${selectedDate}T23:59`);
@@ -51,6 +61,7 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
       .lte("start_time", endOfDay.toISOString());
 
     if (!error) setBookings(data || []);
+    setLoadingSlots(false);
   }
 
   useEffect(() => {
@@ -200,7 +211,14 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div
+      className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+      style={{
+        opacity: revealed ? 1 : 0,
+        transform: revealed ? "translateY(0)" : "translateY(14px)",
+        transition: "opacity 400ms ease 100ms, transform 400ms ease 100ms",
+      }}
+    >
       <div className="flex flex-col gap-2 border-b border-slate-200 pb-5 md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="text-lg font-semibold text-slate-900">
@@ -219,7 +237,7 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
               setEndSlot("");
               setMessage("");
             }}
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
           >
             Clear selection
           </button>
@@ -233,7 +251,7 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
               Booking Title
             </label>
             <input
-              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900"
+              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
               placeholder="e.g. Team meeting"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -246,7 +264,7 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
             </label>
             <input
               type="date"
-              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
               value={selectedDate}
               onChange={(e) => {
                 setSelectedDate(e.target.value);
@@ -278,7 +296,7 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
           </div>
 
           {message && (
-            <p className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+            <p className="rounded-lg bg-red-50 p-3 text-sm text-red-600 animate-content-reveal">
               {message}
             </p>
           )}
@@ -288,7 +306,14 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
             disabled={loading}
             className="w-full rounded-lg bg-slate-900 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-slate-700 active:scale-[0.98] disabled:opacity-60"
           >
-            {loading ? "Creating..." : "Confirm Booking"}
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                Creating...
+              </span>
+            ) : (
+              "Confirm Booking"
+            )}
           </button>
         </div>
 
@@ -317,6 +342,28 @@ export default function BookingForm({ resourceId }: BookingFormProps) {
           {!selectedDate ? (
             <div className="flex h-[480px] items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-sm text-slate-500">
               Select a date to view the schedule.
+            </div>
+          ) : loadingSlots ? (
+            // Skeleton while loading slots
+            <div className="h-[480px] overflow-y-auto rounded-xl border border-slate-200 bg-slate-50">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="grid min-h-[56px] grid-cols-[80px_1fr] border-b border-slate-200 last:border-b-0"
+                >
+                  <div className="border-r border-slate-200 px-3 py-3">
+                    <div className="h-3 w-10 animate-pulse rounded bg-slate-200" />
+                  </div>
+                  <div className="px-4 py-3">
+                    <div
+                      className="h-8 rounded-lg animate-pulse bg-slate-200/70"
+                      style={{
+                        animationDelay: `${i * 60}ms`,
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <div className="h-[480px] overflow-y-auto rounded-xl border border-slate-200 bg-slate-50">
