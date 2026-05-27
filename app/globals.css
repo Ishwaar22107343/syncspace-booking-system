@@ -104,3 +104,15 @@ body {
 nav {
   will-change: auto;
 }
+
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+  50% {
+    transform: translateY(-14px) rotateX(4deg) rotateY(-4deg);
+  }
+  100% {
+    transform: translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+}
