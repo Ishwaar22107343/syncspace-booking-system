@@ -20,7 +20,6 @@ type Booking = {
   id: string;
   title: string;
   start_time: string;
-  end_time: string;
   resources: {
     name: string;
     location: string;
@@ -31,15 +30,14 @@ export default function DashboardPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const showIntro = searchParams.get("intro") === "true";
-
   const [resources, setResources] = useState<Resource[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [userName, setUserName] = useState("User");
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
-  const [introVisible, setIntroVisible] = useState(showIntro);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [introVisible, setIntroVisible] = useState(
+    searchParams.get("intro") === "true"
+  );
 
   useEffect(() => {
     if (!introVisible) return;
@@ -88,7 +86,6 @@ export default function DashboardPage() {
         id,
         title,
         start_time,
-        end_time,
         resources (
           name,
           location
@@ -133,18 +130,12 @@ export default function DashboardPage() {
   const activeBookings = bookings.length;
   const totalResources = resources.length;
   const nextBooking = bookings[0];
-  const initials = userName
-    .split(" ")
-    .map((name) => name[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
 
   return (
     <ProtectedPage>
       {introVisible && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950">
-          <div className="relative flex flex-col items-center">
+          <div className="flex flex-col items-center">
             <div className="h-24 w-24 animate-[spin_2s_linear_infinite] rounded-3xl bg-gradient-to-br from-sky-300 via-indigo-400 to-pink-300 shadow-2xl shadow-indigo-500/40" />
             <h2 className="mt-6 text-2xl font-bold text-white">
               Entering SyncSpace
@@ -169,79 +160,44 @@ export default function DashboardPage() {
               </div>
             </Link>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Link
+                href="/dashboard"
+                className="rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+              >
+                Dashboard
+              </Link>
+
               <Link
                 href="/bookings"
-                className="hidden rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800 sm:inline-flex"
+                className="rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
               >
                 My Bookings
               </Link>
 
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setMenuOpen(!menuOpen)}
-                  className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm transition hover:bg-slate-50"
-                >
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-950 text-xs font-bold text-white">
-                    {initials}
-                  </div>
-                  <div className="hidden text-left md:block">
-                    <p className="max-w-[140px] truncate text-sm font-medium text-slate-900">
-                      {userName}
-                    </p>
-                    <p className="text-xs text-slate-500">Account</p>
-                  </div>
-                  <span className="text-xs text-slate-400">▾</span>
-                </button>
-
-                {menuOpen && (
-                  <div className="absolute right-0 mt-3 w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
-                    <div className="border-b border-slate-100 px-4 py-3">
-                      <p className="text-sm font-semibold text-slate-900">
-                        {userName}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        Signed in to SyncSpace
-                      </p>
-                    </div>
-
-                    <Link
-                      href="/bookings"
-                      className="block px-4 py-3 text-sm text-slate-700 transition hover:bg-slate-50 sm:hidden"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      My Bookings
-                    </Link>
-
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="block w-full px-4 py-3 text-left text-sm text-red-600 transition hover:bg-red-50"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </nav>
 
         <section className="border-b border-white/70 bg-white/50 backdrop-blur">
           <div className="mx-auto max-w-6xl px-6 py-8">
-            <div>
-              <p className="text-sm font-medium text-slate-500">
-                Welcome back, {userName}
-              </p>
-              <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-950">
-                Book shared spaces without the back-and-forth.
-              </h1>
-              <p className="mt-3 max-w-2xl text-slate-600">
-                Manage rooms, studios, equipment, and shared facilities from one
-                clean dashboard.
-              </p>
-            </div>
+            <p className="text-sm font-medium text-slate-500">
+              Welcome back, {userName}
+            </p>
+            <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-950">
+              Book shared spaces without the back-and-forth.
+            </h1>
+            <p className="mt-3 max-w-2xl text-slate-600">
+              Manage rooms, studios, equipment, and shared facilities from one
+              clean dashboard.
+            </p>
           </div>
         </section>
 
