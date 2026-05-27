@@ -2,6 +2,7 @@ import { supabase } from "../../../lib/supabase";
 import BookingForm from "./BookingForm";
 import Link from "next/link";
 import ProtectedPage from "../../../components/ProtectedPage";
+import GuidelinesBox from "./GuidelinesBox";
 
 type ResourcePageProps = {
   params: Promise<{
@@ -56,18 +57,8 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-5xl gap-6 px-6 py-8 md:grid-cols-[0.7fr_1.6fr]">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">
-            Booking Guidelines
-          </h2>
-
-          <ul className="mt-4 space-y-3 text-sm text-slate-600">
-            <li>• Select a date and available time range.</li>
-            <li>• Existing bookings are blocked automatically.</li>
-            <li>• You can cancel bookings from My Bookings.</li>
-          </ul>
-        </div>
+      <section className="mx-auto max-w-5xl px-6 py-8">
+        <GuidelinesBox />
 
         <BookingForm resourceId={resource.id} />
       </section>
