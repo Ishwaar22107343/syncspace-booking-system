@@ -82,7 +82,7 @@ export default function AppShell({
       />
 
       <nav className="sticky top-0 z-40 border-b border-white/70 bg-white/75 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex mx-auto w-full max-w-[1600px] items-center justify-between px-6 py-4">
           <Link
             href="/dashboard"
             onClick={handleNavClick}

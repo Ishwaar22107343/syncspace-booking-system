@@ -24,7 +24,7 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
     return (
       <ProtectedPage>
         <AppShell>
-          <section className="mx-auto max-w-7xl px-6 py-8">
+          <section className="mx-auto w-full max-w-[1600px] px-6 py-8 2xl:px-10">
             <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-600 animate-content-reveal">
               Resource not found.
             </div>
@@ -39,7 +39,7 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
       <AppShell>
         <ResourceHeader resource={resource} />
 
-        <section className="mx-auto max-w-7xl px-6 py-8">
+        <section className="mx-auto w-full max-w-[1600px] px-6 py-8 2xl:px-10">
           <GuidelinesBox />
           <BookingForm 
           resourceId={resource.id} 

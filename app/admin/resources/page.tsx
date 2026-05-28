@@ -115,7 +115,7 @@ export default function AdminResourcesPage() {
     <AdminProtectedPage>
       <AdminShell>
         <section className="border-b border-white/70 bg-white/50 backdrop-blur">
-          <div className="mx-auto max-w-7xl px-6 py-8">
+          <div className="mx-auto w-full max-w-[1600px] px-6 py-8 2xl:px-10">
             <p className="text-sm font-medium text-slate-500">
               Resource Management
             </p>
@@ -130,7 +130,7 @@ export default function AdminResourcesPage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-6 py-8">
+        <section className="mx-auto w-full max-w-[1600px] px-6 py-8 2xl:px-10">
           {message && (
             <p className="mb-6 rounded-xl bg-red-50 p-3 text-sm text-red-600">
               {message}

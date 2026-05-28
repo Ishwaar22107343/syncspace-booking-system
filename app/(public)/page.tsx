@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function HomePage() {
   return (
     <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,#dbeafe,transparent_30%),radial-gradient(circle_at_top_right,#fce7f3,transparent_28%),linear-gradient(to_bottom,#f8fafc,#eef2f7)] text-slate-950">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+      <nav className="mx-auto flex mx-auto w-full max-w-[1600px] items-center justify-between px-6 py-6">
         <Link href="/" className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-sm font-bold text-white shadow-sm">
             S

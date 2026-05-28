@@ -17,7 +17,7 @@ export function DashboardSkeleton() {
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#dbeafe,transparent_30%),radial-gradient(circle_at_top_right,#fce7f3,transparent_26%),linear-gradient(to_bottom,#f8fafc,#eef2f7)]">
       {/* Nav skeleton */}
       <nav className="sticky top-0 z-40 border-b border-white/70 bg-white/75 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between px-6 py-4 2xl:px-10">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 animate-pulse rounded-2xl bg-slate-200" />
             <div className="space-y-1">
@@ -35,7 +35,7 @@ export function DashboardSkeleton() {
 
       {/* Header skeleton */}
       <section className="border-b border-white/70 bg-white/50 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-6 py-8 space-y-3">
+        <div className="mx-auto w-full max-w-[1600px] px-6 py-8 2xl:px-10">
           <div className="h-4 w-40 animate-pulse rounded-md bg-slate-200/70" />
           <div className="h-10 w-3/4 animate-pulse rounded-xl bg-slate-200" />
           <div className="h-4 w-1/2 animate-pulse rounded-md bg-slate-200/70" />
@@ -43,7 +43,7 @@ export function DashboardSkeleton() {
       </section>
 
       {/* Stats skeleton */}
-      <section className="mx-auto max-w-7xl px-6 py-8">
+      <section className="mx-auto w-full max-w-[1600px] px-6 py-8 2xl:px-10">
         <div className="grid gap-4 md:grid-cols-3 mb-10">
           {[1, 2, 3].map((i) => (
             <div
@@ -96,7 +96,7 @@ export function BookingsSkeleton() {
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#dbeafe,transparent_30%),radial-gradient(circle_at_top_right,#fce7f3,transparent_26%),linear-gradient(to_bottom,#f8fafc,#eef2f7)]">
       <nav className="sticky top-0 z-40 border-b border-white/70 bg-white/75 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between px-6 py-4 2xl:px-10">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 animate-pulse rounded-2xl bg-slate-200" />
             <div className="space-y-1">
@@ -113,13 +113,13 @@ export function BookingsSkeleton() {
       </nav>
 
       <section className="border-b border-white/70 bg-white/50 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-6 py-8 space-y-3">
+        <div className="mx-auto w-full max-w-[1600px] px-6 py-8 2xl:px-10">
           <div className="h-9 w-44 animate-pulse rounded-xl bg-slate-200" />
           <div className="h-4 w-80 animate-pulse rounded-md bg-slate-200/70" />
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-8 space-y-4">
+      <section className="mx-auto w-full max-w-[1600px] px-6 py-8 2xl:px-10">
         {[1, 2, 3].map((i) => (
           <div
             key={i}
@@ -145,7 +145,7 @@ export function ResourcePageSkeleton() {
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#dbeafe,transparent_30%),radial-gradient(circle_at_top_right,#fce7f3,transparent_26%),linear-gradient(to_bottom,#f8fafc,#eef2f7)]">
       <nav className="sticky top-0 z-40 border-b border-white/70 bg-white/75 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between px-6 py-4 2xl:px-10">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 animate-pulse rounded-2xl bg-slate-200" />
             <div className="space-y-1">
@@ -162,7 +162,7 @@ export function ResourcePageSkeleton() {
       </nav>
 
       <section className="border-b border-white/70 bg-white/50 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-6 py-8 space-y-3">
+        <div className="mx-auto w-full max-w-[1600px] px-6 py-8 2xl:px-10">
           <div className="h-3.5 w-20 animate-pulse rounded-md bg-slate-200/70" />
           <div className="h-9 w-64 animate-pulse rounded-xl bg-slate-200" />
           <div className="h-4 w-full max-w-xl animate-pulse rounded-md bg-slate-200/70" />
@@ -174,7 +174,7 @@ export function ResourcePageSkeleton() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-5xl px-6 py-8">
+      <section className="mx-auto w-full max-w-[1600px] px-6 py-8 2xl:px-10">
         <div className="h-14 w-full animate-pulse rounded-2xl bg-white/80 mb-6" />
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex justify-between items-start pb-5 border-b border-slate-200 mb-5">

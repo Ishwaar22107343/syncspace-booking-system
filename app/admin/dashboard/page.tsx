@@ -64,7 +64,7 @@ export default function AdminDashboardPage() {
     <AdminProtectedPage>
       <AdminShell>
         <section className="border-b border-white/70 bg-white/50 backdrop-blur">
-          <div className="mx-auto max-w-7xl px-6 py-12">
+          <div className="mx-auto w-full max-w-[1600px] px-6 py-8 2xl:px-10">
             <p className="text-sm font-medium text-slate-500">
               Admin Dashboard
             </p>
@@ -80,7 +80,7 @@ export default function AdminDashboardPage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-6 py-12">
+        <section className="mx-auto w-full max-w-[1600px] px-6 py-8 2xl:px-10">
           {loading ? (
             <div className="grid gap-6 md:grid-cols-4">
               {[1, 2, 3, 4].map((item) => (

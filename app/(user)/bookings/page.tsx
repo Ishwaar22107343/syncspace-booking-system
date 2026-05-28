@@ -107,7 +107,7 @@ export default function BookingsPage() {
     <ProtectedPage>
       <AppShell>
         <section className="border-b border-white/70 bg-white/50 backdrop-blur">
-          <div className="mx-auto max-w-7xl px-6 py-8">
+          <div className="mx-auto w-full max-w-[1600px] px-6 py-8 2xl:px-10">
             <h1
               className="text-3xl font-bold text-slate-950"
               style={{

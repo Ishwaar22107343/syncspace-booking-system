@@ -22,7 +22,7 @@ export default function ResourceHeader({ resource }: { resource: Resource }) {
 
   return (
     <section className="border-b border-white/70 bg-white/50 backdrop-blur">
-      <div className="mx-auto max-w-7xl px-6 py-8">
+      <div className="mx-auto w-full max-w-[1600px] px-6 py-8 2xl:px-10">
         <p
           className="text-xs font-semibold uppercase tracking-wide text-slate-500"
           style={{
