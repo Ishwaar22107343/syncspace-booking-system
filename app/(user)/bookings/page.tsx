@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../../../lib/supabase";
 import { useRouter } from "next/navigation";
-import ProtectedPage from "../../components/ProtectedPage";
-import AppShell from "../../components/AppShell";
+import ProtectedPage from "../../../components/user/ProtectedPage";
+import AppShell from "../../../components/user/AppShell";
 
 type Booking = {
   id: string;
@@ -107,7 +107,7 @@ export default function BookingsPage() {
     <ProtectedPage>
       <AppShell>
         <section className="border-b border-white/70 bg-white/50 backdrop-blur">
-          <div className="mx-auto max-w-5xl px-6 py-8">
+          <div className="mx-auto max-w-7xl px-6 py-8">
             <h1
               className="text-3xl font-bold text-slate-950"
               style={{
@@ -131,7 +131,7 @@ export default function BookingsPage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-5xl px-6 py-8">
+        <section className="mx-auto max-w-7xl px-6 py-8">
           {message && (
             <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600 animate-content-reveal">
               {message}

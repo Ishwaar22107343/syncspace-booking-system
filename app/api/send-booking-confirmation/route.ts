@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     const { data, error } = await resend.emails.send({
       from: "SyncSpace <onboarding@resend.dev>",
       to: [to],
-      subject: "Booking Confirmed – SyncSpace",
+      subject: "Booking Confirmed - SyncSpace",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px;">
           <h2 style="color: #0f172a;">Booking Confirmed</h2>
@@ -66,7 +66,9 @@ export async function POST(request: Request) {
     }
 
     return Response.json({ success: true, data });
-  } catch {
+  } catch (error) {
+    console.error("BOOKING EMAIL ERROR:", error)
+    
     return Response.json(
       { error: "Failed to send confirmation email." },
       { status: 500 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
 import { useEffect, useState } from "react";
 
 export default function AppShell({
@@ -12,25 +12,49 @@ export default function AppShell({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [navigating, setNavigating] = useState(false);
-  const [progress, setProgress] = useState(0);
 
-  // Simulate progress bar on navigation
+  const [progress, setProgress] = useState(0);
+  const [role, setRole] = useState<string | null>(null);
+
   useEffect(() => {
-    setNavigating(false);
     setProgress(100);
-    const t = setTimeout(() => setProgress(0), 400);
-    return () => clearTimeout(t);
+
+    const timer = setTimeout(() => {
+      setProgress(0);
+    }, 400);
+
+    return () => clearTimeout(timer);
   }, [pathname]);
 
+  useEffect(() => {
+    async function loadRole() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      setRole(data?.role || null);
+    }
+
+    loadRole();
+  }, []);
+
   function handleNavClick() {
-    setNavigating(true);
     setProgress(40);
-    setTimeout(() => setProgress(70), 150);
+
+    setTimeout(() => {
+      setProgress(70);
+    }, 150);
   }
 
   async function handleLogout() {
-    setNavigating(true);
     setProgress(60);
     await supabase.auth.signOut();
     router.push("/auth");
@@ -43,9 +67,8 @@ export default function AppShell({
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#dbeafe,transparent_30%),radial-gradient(circle_at_top_right,#fce7f3,transparent_26%),linear-gradient(to_bottom,#f8fafc,#eef2f7)]">
-      {/* Navigation progress bar */}
       <div
-        className="fixed top-0 left-0 z-50 h-[2px] bg-gradient-to-r from-sky-400 via-indigo-500 to-pink-400 pointer-events-none"
+        className="pointer-events-none fixed left-0 top-0 z-50 h-[2px] bg-gradient-to-r from-sky-400 via-indigo-500 to-pink-400"
         style={{
           width: `${progress}%`,
           opacity: progress > 0 && progress < 100 ? 1 : 0,
@@ -59,15 +82,16 @@ export default function AppShell({
       />
 
       <nav className="sticky top-0 z-40 border-b border-white/70 bg-white/75 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <Link
             href="/dashboard"
-            className="flex items-center gap-3"
             onClick={handleNavClick}
+            className="flex items-center gap-3"
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-sm font-bold text-white shadow-sm">
               S
             </div>
+
             <div>
               <p className="text-sm font-bold text-slate-950">SyncSpace</p>
               <p className="text-xs text-slate-500">Resource booking</p>
@@ -77,6 +101,7 @@ export default function AppShell({
           <div className="flex items-center gap-2">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
+
               return (
                 <Link
                   key={link.href}
@@ -92,6 +117,20 @@ export default function AppShell({
                 </Link>
               );
             })}
+
+            {role === "admin" && (
+              <Link
+                href="/admin"
+                onClick={handleNavClick}
+                className={`rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
+                  pathname === "/admin"
+                    ? "bg-slate-100 text-slate-950"
+                    : "text-slate-700 hover:bg-slate-100"
+                }`}
+              >
+                Admin Console
+              </Link>
+            )}
 
             <button
               type="button"

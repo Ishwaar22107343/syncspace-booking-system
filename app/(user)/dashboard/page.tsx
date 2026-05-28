@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { supabase } from "../../lib/supabase";
-import ProtectedPage from "../../components/ProtectedPage";
-import AppShell from "../../components/AppShell";
+import { supabase } from "../../../lib/supabase";
+import ProtectedPage from "../../../components/user/ProtectedPage";
+import AppShell from "../../../components/user/AppShell";
 
 type Resource = {
   id: string;
@@ -21,7 +21,7 @@ type Booking = {
   id: string;
   title: string;
   start_time: string;
-  end_time: string,
+  end_time: string;
   resources: {
     name: string;
     location: string;
@@ -38,6 +38,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [revealed, setRevealed] = useState(false);
+  const [search, setSearch] = useState("");
 
   const [introVisible, setIntroVisible] = useState(
     searchParams.get("intro") === "true"
@@ -97,12 +98,12 @@ export default function DashboardPage() {
           "Failed to load dashboard."
       );
     } else {
-      setResources(resourcesData || []);
+      setResources((resourcesData || []) as Resource[]);
       setBookings((bookingsData || []) as unknown as Booking[]);
     }
 
     setLoading(false);
-    // Slight delay so the animation fires after paint
+
     requestAnimationFrame(() => {
       requestAnimationFrame(() => setRevealed(true));
     });
@@ -132,6 +133,22 @@ export default function DashboardPage() {
     }).format(new Date(dateString));
   }
 
+  const filteredResources = useMemo(() => {
+    const keyword = search.toLowerCase().trim();
+
+    if (!keyword) return resources;
+
+    return resources.filter((resource) => {
+      return (
+        resource.name.toLowerCase().includes(keyword) ||
+        resource.type.toLowerCase().includes(keyword) ||
+        resource.location.toLowerCase().includes(keyword) ||
+        String(resource.capacity ?? "").includes(keyword) ||
+        resource.description?.toLowerCase().includes(keyword)
+      );
+    });
+  }, [resources, search]);
+
   const activeBookings = bookings.length;
   const totalResources = resources.length;
   const nextBooking = bookings[0];
@@ -154,7 +171,7 @@ export default function DashboardPage() {
         )}
 
         <section className="border-b border-white/70 bg-white/50 backdrop-blur">
-          <div className="mx-auto max-w-6xl px-6 py-8">
+          <div className="mx-auto max-w-7xl px-6 py-8">
             <p
               className="text-sm font-medium text-slate-500"
               style={{
@@ -165,22 +182,26 @@ export default function DashboardPage() {
             >
               Welcome back, {userName}
             </p>
+
             <h1
               className="mt-2 text-4xl font-bold tracking-tight text-slate-950"
               style={{
                 opacity: revealed ? 1 : 0,
                 transform: revealed ? "translateY(0)" : "translateY(8px)",
-                transition: "opacity 300ms ease 60ms, transform 300ms ease 60ms",
+                transition:
+                  "opacity 300ms ease 60ms, transform 300ms ease 60ms",
               }}
             >
               Book shared spaces without the back-and-forth.
             </h1>
+
             <p
               className="mt-3 max-w-2xl text-slate-600"
               style={{
                 opacity: revealed ? 1 : 0,
                 transform: revealed ? "translateY(0)" : "translateY(8px)",
-                transition: "opacity 300ms ease 120ms, transform 300ms ease 120ms",
+                transition:
+                  "opacity 300ms ease 120ms, transform 300ms ease 120ms",
               }}
             >
               Manage rooms, studios, equipment, and shared facilities from one
@@ -189,83 +210,118 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-6 py-8">
+        <section className="mx-auto max-w-7xl px-6 py-8">
           {message && (
-            <p className="mb-5 rounded-lg bg-red-50 p-3 text-sm text-red-600 animate-content-reveal">
+            <p className="mb-5 rounded-lg bg-red-50 p-3 text-sm text-red-600">
               {message}
             </p>
           )}
 
-          {!loading && (
+          {loading ? (
             <>
-              {/* Stats */}
               <div className="grid gap-4 md:grid-cols-3">
-                {[
-                  {
-                    label: "My Upcoming Bookings",
-                    value: activeBookings,
-                    sub: "Future confirmed reservations",
-                    dark: false,
-                  },
-                  {
-                    label: "Resources",
-                    value: totalResources,
-                    sub: "Rooms, equipment, and shared facilities",
-                    dark: false,
-                  },
-                  null,
-                ].map((stat, i) => {
-                  if (i === 2) {
-                    return (
-                      <div
-                        key="next"
-                        className="rounded-2xl border border-white/80 bg-slate-950 p-5 text-white shadow-sm"
-                        style={{
-                          opacity: revealed ? 1 : 0,
-                          transform: revealed ? "translateY(0)" : "translateY(12px)",
-                          transition: `opacity 350ms ease ${180 + i * 60}ms, transform 350ms ease ${180 + i * 60}ms`,
-                        }}
-                      >
-                        <p className="text-sm font-medium text-slate-300">Next Booking</p>
-                        {nextBooking ? (
-                          <>
-                            <p className="mt-3 text-lg font-semibold">{nextBooking.title}</p>
-                            <p className="mt-1 text-sm text-slate-300">{nextBooking.resources?.name}</p>
-                            <p className="mt-3 text-sm text-slate-300">
-                              {formatMalaysiaDateTime(nextBooking.start_time)}
-                            </p>
-                          </>
-                        ) : (
-                          <p className="mt-3 text-sm text-slate-300">No upcoming bookings yet.</p>
-                        )}
-                      </div>
-                    );
-                  }
-                  if (!stat) return null;
-                  return (
-                    <div
-                      key={i}
-                      className="rounded-2xl border border-white/80 bg-white/80 p-5 shadow-sm backdrop-blur"
-                      style={{
-                        opacity: revealed ? 1 : 0,
-                        transform: revealed ? "translateY(0)" : "translateY(12px)",
-                        transition: `opacity 350ms ease ${180 + i * 60}ms, transform 350ms ease ${180 + i * 60}ms`,
-                      }}
-                    >
-                      <p className="text-sm font-medium text-slate-500">{stat.label}</p>
-                      <p className="mt-3 text-3xl font-bold text-slate-950">{stat.value}</p>
-                      <p className="mt-1 text-sm text-slate-500">{stat.sub}</p>
-                    </div>
-                  );
-                })}
+                {[1, 2, 3].map((item) => (
+                  <div
+                    key={item}
+                    className="h-36 animate-pulse rounded-2xl border border-white/80 bg-white/80 shadow-sm"
+                  />
+                ))}
+              </div>
+
+              <div className="mt-10 h-20 animate-pulse rounded-2xl border border-white/80 bg-white/80 shadow-sm" />
+
+              <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {[1, 2, 3, 4, 5, 6].map((item) => (
+                  <div
+                    key={item}
+                    className="h-72 animate-pulse rounded-3xl border border-white/80 bg-white/85 shadow-sm"
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="grid gap-4 md:grid-cols-3">
+                <div
+                  className="rounded-2xl border border-white/80 bg-white/80 p-5 shadow-sm backdrop-blur"
+                  style={{
+                    opacity: revealed ? 1 : 0,
+                    transform: revealed ? "translateY(0)" : "translateY(12px)",
+                    transition:
+                      "opacity 350ms ease 180ms, transform 350ms ease 180ms",
+                  }}
+                >
+                  <p className="text-sm font-medium text-slate-500">
+                    My Upcoming Bookings
+                  </p>
+                  <p className="mt-3 text-3xl font-bold text-slate-950">
+                    {activeBookings}
+                  </p>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Future confirmed reservations
+                  </p>
+                </div>
+
+                <div
+                  className="rounded-2xl border border-white/80 bg-white/80 p-5 shadow-sm backdrop-blur"
+                  style={{
+                    opacity: revealed ? 1 : 0,
+                    transform: revealed ? "translateY(0)" : "translateY(12px)",
+                    transition:
+                      "opacity 350ms ease 240ms, transform 350ms ease 240ms",
+                  }}
+                >
+                  <p className="text-sm font-medium text-slate-500">
+                    Resources
+                  </p>
+                  <p className="mt-3 text-3xl font-bold text-slate-950">
+                    {totalResources}
+                  </p>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Rooms, equipment, and shared facilities
+                  </p>
+                </div>
+
+                <div
+                  className="rounded-2xl border border-white/80 bg-slate-950 p-5 text-white shadow-sm"
+                  style={{
+                    opacity: revealed ? 1 : 0,
+                    transform: revealed ? "translateY(0)" : "translateY(12px)",
+                    transition:
+                      "opacity 350ms ease 300ms, transform 350ms ease 300ms",
+                  }}
+                >
+                  <p className="text-sm font-medium text-slate-300">
+                    Next Booking
+                  </p>
+
+                  {nextBooking ? (
+                    <>
+                      <p className="mt-3 text-lg font-semibold">
+                        {nextBooking.title}
+                      </p>
+                      <p className="mt-1 text-sm text-slate-300">
+                        {nextBooking.resources?.name}
+                      </p>
+                      <p className="mt-3 text-sm text-slate-300">
+                        {formatMalaysiaDateTime(nextBooking.start_time)}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="mt-3 text-sm text-slate-300">
+                      No upcoming bookings yet.
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div
-                className="mt-10 flex flex-col gap-3 md:flex-row md:items-end md:justify-between"
+                className="mt-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between"
                 style={{
                   opacity: revealed ? 1 : 0,
                   transform: revealed ? "translateY(0)" : "translateY(10px)",
-                  transition: "opacity 350ms ease 360ms, transform 350ms ease 360ms",
+                  transition:
+                    "opacity 350ms ease 360ms, transform 350ms ease 360ms",
                 }}
               >
                 <div>
@@ -273,24 +329,36 @@ export default function DashboardPage() {
                     Available Resources
                   </h2>
                   <p className="mt-1 text-sm text-slate-600">
-                    Choose a resource to view its schedule and create a booking.
+                    Search and choose a resource to view its schedule.
                   </p>
                 </div>
 
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Search resources..."
+                  className="w-full rounded-full border border-white bg-white/80 px-4 py-2 text-sm text-slate-600 shadow-sm outline-none placeholder:text-slate-400 focus:border-slate-300 md:max-w-sm"
+                />
+              </div>
+
+              <div className="mt-4 flex justify-end">
                 <div className="rounded-full border border-white bg-white/80 px-4 py-2 text-sm text-slate-500 shadow-sm">
-                  {totalResources} resources listed
+                  {filteredResources.length} of {totalResources} resources shown
                 </div>
               </div>
 
               <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {resources.map((resource, i) => (
+                {filteredResources.map((resource, i) => (
                   <div
                     key={resource.id}
                     className="group rounded-3xl border border-white/80 bg-white/85 p-5 shadow-sm backdrop-blur transition duration-200 hover:-translate-y-1 hover:shadow-xl"
                     style={{
                       opacity: revealed ? 1 : 0,
                       transform: revealed ? "translateY(0)" : "translateY(14px)",
-                      transition: `opacity 400ms ease ${420 + i * 50}ms, transform 400ms ease ${420 + i * 50}ms`,
+                      transition: `opacity 400ms ease ${
+                        420 + i * 50
+                      }ms, transform 400ms ease ${420 + i * 50}ms`,
                     }}
                   >
                     <div className="mb-4 flex items-start justify-between gap-3">
@@ -315,17 +383,22 @@ export default function DashboardPage() {
                     </div>
 
                     <p className="min-h-[48px] text-sm leading-6 text-slate-600">
-                      {resource.description}
+                      {resource.description || "No description provided."}
                     </p>
 
                     <div className="mt-5 space-y-2 text-sm text-slate-600">
                       <p>
-                        <span className="font-medium text-slate-900">Location:</span>{" "}
+                        <span className="font-medium text-slate-900">
+                          Location:
+                        </span>{" "}
                         {resource.location}
                       </p>
+
                       {resource.capacity && (
                         <p>
-                          <span className="font-medium text-slate-900">Capacity:</span>{" "}
+                          <span className="font-medium text-slate-900">
+                            Capacity:
+                          </span>{" "}
                           {resource.capacity} pax
                         </p>
                       )}
@@ -340,6 +413,12 @@ export default function DashboardPage() {
                   </div>
                 ))}
               </div>
+
+              {filteredResources.length === 0 && (
+                <div className="mt-6 rounded-3xl border border-white/80 bg-white/85 p-6 text-center text-sm text-slate-500 shadow-sm backdrop-blur">
+                  No resources found.
+                </div>
+              )}
             </>
           )}
         </section>

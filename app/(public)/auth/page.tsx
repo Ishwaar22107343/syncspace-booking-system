@@ -3,7 +3,7 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../../../lib/supabase";
 import { useRouter } from "next/navigation";
 
 export default function AuthPage() {
@@ -39,7 +39,33 @@ export default function AuthPage() {
         return;
       }
 
-      router.push("/dashboard?intro=true");
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        setMessage("Unable to verify user session.");
+        setLoading(false);
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      if (profileError) {
+        setMessage(profileError.message);
+        setLoading(false);
+        return;
+      }
+
+      if (profile?.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard?intro=true");
+      }
     } else {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -57,6 +83,7 @@ export default function AuthPage() {
           id: data.user.id,
           full_name: fullName,
           email,
+          role: "student",
         });
 
         if (profileError) {
