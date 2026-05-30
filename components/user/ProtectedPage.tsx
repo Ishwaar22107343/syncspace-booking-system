@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { useRouter, usePathname } from "next/navigation";
-import { DashboardSkeleton, BookingsSkeleton, ResourcePageSkeleton } from "./Skeleton";
 
 type SkeletonType = "dashboard" | "bookings" | "resource" | "none";
 
@@ -40,16 +39,6 @@ export default function ProtectedPage({
 
     checkUser();
   }, [router]);
-
-  if (checking) {
-    if (skeletonType === "dashboard") return <DashboardSkeleton />;
-    if (skeletonType === "bookings") return <BookingsSkeleton />;
-    if (skeletonType === "resource") return <ResourcePageSkeleton />;
-    // Generic fade-in placeholder for other pages
-    return (
-      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#dbeafe,transparent_30%),radial-gradient(circle_at_top_right,#fce7f3,transparent_26%),linear-gradient(to_bottom,#f8fafc,#eef2f7)]" />
-    );
-  }
 
   return <>{children}</>;
 }

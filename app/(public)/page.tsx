@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function HomePage() {
   return (
     <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,#dbeafe,transparent_30%),radial-gradient(circle_at_top_right,#fce7f3,transparent_28%),linear-gradient(to_bottom,#f8fafc,#eef2f7)] text-slate-950">
-      <nav className="mx-auto flex mx-auto w-full max-w-[1600px] items-center justify-between px-6 py-6">
+      <nav className="mx-auto flex w-full max-w-[1600px] items-center justify-between px-6 py-6">
         <Link href="/" className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-sm font-bold text-white shadow-sm">
             S
@@ -14,12 +14,20 @@ export default function HomePage() {
           </div>
         </Link>
 
-        <Link
-          href="/auth"
-          className="rounded-xl bg-slate-950 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800"
-        >
-          Login
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/auth"
+            className="rounded-xl px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-white/60"
+          >
+            Login
+          </Link>
+          <Link
+            href="/auth?mode=signup"
+            className="rounded-xl bg-slate-950 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800"
+          >
+            Sign Up
+          </Link>
+        </div>
       </nav>
 
       <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-12 md:grid-cols-[1fr_0.9fr] md:py-20">
@@ -39,16 +47,9 @@ export default function HomePage() {
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href="/auth"
-              className="rounded-2xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/15 transition hover:-translate-y-0.5 hover:bg-slate-800"
-            >
-              Start Booking
-            </Link>
-
             <a
               href="#features"
-              className="rounded-2xl border border-white bg-white/75 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:bg-white"
+              className="rounded-2xl border border-white/60 bg-white/40 px-6 py-3 text-sm font-semibold text-slate-600 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/60"
             >
               View Features
             </a>
@@ -144,12 +145,20 @@ export default function HomePage() {
             Start managing shared spaces with a smoother, smarter booking
             experience.
           </p>
-          <Link
-            href="/auth"
-            className="mt-6 inline-flex rounded-2xl bg-white px-6 py-3 text-sm font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-slate-100"
-          >
-            Get Started
-          </Link>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href="/auth?mode=signup"
+              className="inline-flex rounded-2xl bg-white px-6 py-3 text-sm font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-slate-100"
+            >
+              Create Free Account
+            </Link>
+            <Link
+              href="/auth"
+              className="inline-flex rounded-2xl border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/20"
+            >
+              Login
+            </Link>
+          </div>
         </div>
       </section>
     </main>

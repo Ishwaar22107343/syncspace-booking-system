@@ -1,13 +1,12 @@
-//auth.page.tsx
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function AuthPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [isLogin, setIsLogin] = useState(true);
   const [fullName, setFullName] = useState("");
@@ -16,6 +15,12 @@ export default function AuthPage() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (searchParams.get("mode") === "signup") {
+      setIsLogin(false);
+    }
+  }, [searchParams]);
 
   async function handleAuth() {
     setLoading(true);
@@ -114,6 +119,28 @@ export default function AuthPage() {
           </p>
         </div>
 
+        {/* Toggle tabs */}
+        <div className="mb-6 flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+          <button
+            type="button"
+            onClick={() => { setIsLogin(true); setMessage(""); }}
+            className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${
+              isLogin ? "bg-white text-slate-950 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            Login
+          </button>
+          <button
+            type="button"
+            onClick={() => { setIsLogin(false); setMessage(""); }}
+            className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${
+              !isLogin ? "bg-white text-slate-950 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            Sign Up
+          </button>
+        </div>
+
         <div className="space-y-4">
           {!isLogin && (
             <input
@@ -151,20 +178,7 @@ export default function AuthPage() {
             disabled={loading}
             className="w-full rounded-xl bg-slate-950 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-slate-800 active:scale-[0.98] disabled:opacity-60"
           >
-            {loading ? "Please wait..." : isLogin ? "Login" : "Sign up"}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setMessage("");
-            }}
-            className="w-full text-sm text-slate-600 transition hover:text-slate-950"
-          >
-            {isLogin
-              ? "New here? Create an account"
-              : "Already have an account? Login"}
+            {loading ? "Please wait..." : isLogin ? "Login" : "Create Account"}
           </button>
         </div>
       </div>
